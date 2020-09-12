@@ -19,7 +19,7 @@
              If you'd like to turn WHILL off by command or manually while using ros_whill, set value to false. 
              Otherwise WHILL automatically turns on.
          -->
-        <param name="keep_connected" value="true" />
+        <param name="keep_connected" value="false" />
 
         <!-- Serial Device name -->
         <param name="serialport" value="$(arg serialport)"/>

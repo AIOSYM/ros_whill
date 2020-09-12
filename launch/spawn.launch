@@ -1,0 +1,12 @@
+<launch>
+    <arg name="model" default="$(find ros_whill)/xacro/modelc.xacro" />
+    <arg name="gui" default="true" />
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+    
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.5"/>
+
+    <node name="whill_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-urdf -param robot_description -model whill -x $(arg x) -y $(arg y) -z $(arg z)"/>
+</launch>
