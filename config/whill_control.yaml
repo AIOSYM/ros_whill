@@ -1,0 +1,18 @@
+/whill_simulator:
+  # Publish all joint states
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 20
+
+  # Velocity Controller
+  right_wheel_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: rightWheel
+    pid: {p: 100.0,i: 0.01, d: 10.0}
+
+  left_wheel_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: leftWheel
+    pid: {p: 100.0,i: 0.01, d: 10.0}
+
+  
