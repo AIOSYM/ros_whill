@@ -1,0 +1,29 @@
+<launch>
+    <arg name="model" default="$(find ros_whill)/xacro/modelc.xacro" />
+    <arg name="gui" default="true" />
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+    
+    <!-- The world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" default="false"/>
+        <arg name="use_sim_time" default="true"/>
+        <arg name="gui" default="true"/>
+        <arg name="headless" default="false"/>
+        <arg name="debug" default="false"/>
+    </include>
+
+    <!-- Whill Model-->
+    <node name="whill_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-urdf -param robot_description -model whill"/>
+
+    <!-- Load the controller-->
+    <rosparam file="$(find ros_whill)/config/whill_control.yaml" command="load"/>
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" ns="/whill_simulator" args="right_wheel_velocity_controller left_wheel_velocity_controller joint_state_controller"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <remap from="/joint_states" to="/whill_simulator/joint_states"/>
+    </node>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ros_whill)/rviz/whill.rviz" required="true" />
+    
+</launch>
