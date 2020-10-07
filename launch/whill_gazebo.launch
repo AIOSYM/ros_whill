@@ -1,0 +1,35 @@
+<launch>
+  <arg name="rviz" default="true" />
+  <arg name="model" default="$(find ros_whill)/xacro/modelc.xacro" />
+  <arg name="paused" default="false" />
+  <arg name="use_sim_time" default="true" />
+  <arg name="gui" default="true" />
+  <arg name="headless" default="false" />
+  <arg name="debug" default="false" />
+  <arg name="world_name" default="clearpath_playpen" />
+  
+  <group if="$(eval world_name == 'clearpath_playpen')">
+    <include file="$(find ros_whill)/launch/empty_world.launch">
+      <!-- <arg name="world_name" value="$(find ros_whill)/world/clearpath_playpen.world" /> -->
+      <arg name="debug" value="$(arg debug)" />
+      <arg name="gui" value="$(arg gui)" />
+      <arg name="paused" value="$(arg paused)" />
+      <arg name="use_sim_time" value="$(arg use_sim_time)" />
+      <arg name="headless" value="$(arg headless)" />
+    </include>
+  </group>
+  
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model) --inorder"/>
+  
+  <include file="$(find ros_whill)/launch/whill_control.launch" />
+  
+  <!-- Whill Model-->   
+  <node name="whill_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param robot_description -urdf -model whill"/>
+
+  <group if="$(arg rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find ros_whill)/rviz/whill.rviz" />
+  </group>
+  
+</launch>

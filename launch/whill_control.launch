@@ -1,0 +1,9 @@
+<launch>
+    <rosparam file="$(find ros_whill)/config/whill_control.yaml" command="load" ns="/whill_simulator"/>
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/whill_simulator"
+        args="joint_state_controller diff_drive_controller"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <remap from="/joint_states" to="/whill_simulator/joint_states"/>
+    </node>
+</launch>
