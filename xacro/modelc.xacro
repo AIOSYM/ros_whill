@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="whill_modelc" >
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="whill" >
 
     <link name="base_link">
 
@@ -36,7 +36,7 @@
         <origin xyz="0.3 0 0.0" rpy="0 0 0"/>
     </joint>
 
-    <link name="footrest_link">
+    <link name="footrest_link">imu_joint
         <collision>
             <geometry>
                 <box size="0.250 0.260 0.050"/>
@@ -91,7 +91,7 @@
         <parent link="base_floor" />
         <child link="left_wheel_link" />
         <origin xyz="-0.3 0.245 0" rpy="-1.57 0 0" />
-        <axis xyz="0 0 1" />
+        <axis xyz="0 0 -1" />
     </joint>
 
     <link name="right_wheel_link">
@@ -202,6 +202,7 @@
         </joint>
         <actuator name="right_wheel_motor">
             <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            <!-- <mechanicalReduction>30</mechanicalReduction> -->
             <mechanicalReduction>30</mechanicalReduction>
         </actuator>
     </transmission>
@@ -213,6 +214,7 @@
         </joint>
         <actuator name="left_wheel_motor">
             <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            <!-- <mechanicalReduction>30</mechanicalReduction> -->
             <mechanicalReduction>30</mechanicalReduction>
         </actuator>
     </transmission>
@@ -222,6 +224,7 @@
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
             <robotNamespace>/whill_simulator</robotNamespace>
+            <legacyModeNS>true</legacyModeNS>
         </plugin>
     </gazebo>
 
@@ -231,32 +234,30 @@
         <mu2 value="0.05" />
     </gazebo>
 
-    <gazebo reference="sensor_arm_link">
+    <gazebo reference="right_wheel_link">
         <selfCollide>true</selfCollide>
-        <mu1 value="0.05" />
-        <mu2 value="0.05" />
+        <material>Gazebo/Gray</material>
+        <mu1 value="0.8" />
+        <mu2 value="0.8" />
     </gazebo>
 
-    <gazebo reference="rearwheel_right">
+    <gazebo reference="left_wheel_link">
         <selfCollide>true</selfCollide>
-        <mu1 value="1.0" />
-        <mu2 value="1.0" />
-    </gazebo>
-
-    <gazebo reference="rearwheel_left">
-        <selfCollide>true</selfCollide>
-        <mu1 value="1.0" />
-        <mu2 value="1.0" />
+        <material>Gazebo/Gray</material>
+        <mu1 value="0.8" />
+        <mu2 value="0.8" />
     </gazebo>
 
     <gazebo reference="frontwheel_right">
         <selfCollide>true</selfCollide>
+        <material>Gazebo/Gray</material>
         <mu1 value="0.0" />
         <mu2 value="0.0" />
     </gazebo>
 
     <gazebo reference="frontwheel_left">
         <selfCollide>true</selfCollide>
+        <material>Gazebo/Gray</material>
         <mu1 value="0.0" />
         <mu2 value="0.0" />
     </gazebo>
