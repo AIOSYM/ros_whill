@@ -2,7 +2,6 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="whill" >
 
     <link name="base_link">
-
     </link>
 
     <link name="base_floor">
@@ -36,7 +35,7 @@
         <origin xyz="0.3 0 0.0" rpy="0 0 0"/>
     </joint>
 
-    <link name="footrest_link">imu_joint
+    <link name="footrest_link">
         <collision>
             <geometry>
                 <box size="0.250 0.260 0.050"/>
@@ -182,23 +181,83 @@
         <axis xyz="0 0 1" />
     </joint>
 
-    <!-- IMU -->
+     <!-- ===============  IMU =============== -->
     <link name="imu">
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.02 0.02 0.02"/>
+            </geometry>
+            <material name="Blue" />
+        </visual>
     </link>
 
     <joint name="imu_joint" type="fixed">
-        <axis xyz="0 1 0" />
-        <origin xyz="0.02 0 0.05" rpy="0 0.85521133347 3.14159265359"/>
-        <parent link="base_link"/>
-        <child link="imu"/>
-    </joint>
-    <!-- <joint name="imu_joint" type="fixed">
-        <axis xyz="0 1 0" />
-        <origin xyz="0.02 0 0.05" rpy="0 0.85521133347 3.14159265359"/>
         <parent link="base_floor"/>
         <child link="imu"/>
-    </joint> -->
+        <axis xyz="0 1 0" />
+        <origin xyz="0.02 0 0.05" rpy="0 0.85521133347 3.14159265359"/>
+    </joint>
 
+    <!-- =============== Sensor =============== -->
+    <!-- =============== Camera =============== -->
+    <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.05 0.1 0.05"/>
+      </geometry>
+      <material name="Blue" />
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_floor"/>
+    <child link="camera_link" />
+    <origin xyz="0.3 0 0.2" rpy="0 0 0" />
+  </joint>
+
+  <gazebo reference="camera_link">
+    <material>Gazebo/Blue</material>
+    <turnGravityOff>false</turnGravityOff>
+    <sensor type="camera" name="camera1">
+      <update_rate>15.0</update_rate>
+      <camera name="head">
+
+          <pose>0 0 0 0 0 0</pose>
+
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>400</width>
+          <height>400</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.01</near>
+          <far>100</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>whill_simulator/camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+    
     <!-- ===============  Transmission =============== -->
 
     <transmission name="right_wheel_trans">
@@ -225,8 +284,7 @@
         </actuator>
     </transmission>
 
-    <!-- For Gazebo -->
-
+    <!-- ===============  Gazebo =============== -->
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
             <robotNamespace>/whill_simulator</robotNamespace>

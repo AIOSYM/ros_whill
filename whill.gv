@@ -1,0 +1,26 @@
+digraph G {
+node [shape=box];
+"base_link" [label="base_link"];
+"base_floor" [label="base_floor"];
+"footrest_link" [label="footrest_link"];
+"frontwheel_left" [label="frontwheel_left"];
+"frontwheel_right" [label="frontwheel_right"];
+"left_wheel_link" [label="left_wheel_link"];
+"right_wheel_link" [label="right_wheel_link"];
+"imu" [label="imu"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"base_link" -> "base_body_joint" [label="xyz: 0.3 0 0 \nrpy: 0 -0 0"]
+"base_body_joint" -> "base_floor"
+"base_floor" -> "footrest_joint" [label="xyz: 0.32 0 0 \nrpy: 0 -0 0"]
+"footrest_joint" -> "footrest_link"
+"base_floor" -> "frontwheel_left_joint" [label="xyz: 0.3 -0.245 0 \nrpy: 1.57 -0 0"]
+"frontwheel_left_joint" -> "frontwheel_left"
+"base_floor" -> "frontwheel_right_joint" [label="xyz: 0.3 0.245 0 \nrpy: 1.57 -0 0"]
+"frontwheel_right_joint" -> "frontwheel_right"
+"base_floor" -> "leftWheel" [label="xyz: -0.3 0.245 0 \nrpy: 1.57 -0 0"]
+"leftWheel" -> "left_wheel_link"
+"base_floor" -> "rightWheel" [label="xyz: -0.3 -0.245 0 \nrpy: -1.57 0 0"]
+"rightWheel" -> "right_wheel_link"
+"base_link" -> "imu_joint" [label="xyz: 0.02 0 0.05 \nrpy: 0 0.855211 -3.14159"]
+"imu_joint" -> "imu"
+}

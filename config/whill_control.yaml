@@ -21,7 +21,7 @@
     right_wheel : 'rightWheel'
 
     publish_rate: 20.0
-    cmd_vel_timeout: 1.0
+    cmd_vel_timeout: 0.5
     wheel_separation : 0.49
     wheel_radius : 0.1325
     pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
