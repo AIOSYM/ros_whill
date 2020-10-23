@@ -7,8 +7,10 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
+        - /RobotModel1/Status1
         - /TF1
         - /Camera1
+        - /LaserScan1
       Splitter Ratio: 0.5
     Tree Height: 209
   - Class: rviz/Selection
@@ -104,6 +106,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        lidar_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         right_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -136,6 +143,8 @@ Visualization Manager:
           Value: true
         left_wheel_link:
           Value: true
+        lidar_link:
+          Value: true
         odom:
           Value: true
         right_wheel_link:
@@ -146,7 +155,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
+        odom:
           base_floor:
             camera_link:
               {}
@@ -160,10 +169,10 @@ Visualization Manager:
               {}
             left_wheel_link:
               {}
+            lidar_link:
+              {}
             right_wheel_link:
               {}
-        odom:
-          {}
       Update Interval: 0
       Value: true
     - Class: rviz/Camera
@@ -178,15 +187,46 @@ Visualization Manager:
       Value: true
       Visibility:
         Grid: true
+        LaserScan: true
         RobotModel: true
         TF: true
         Value: true
       Zoom Factor: 1
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 0
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_floor
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -248,5 +288,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1216
-  X: 275
-  Y: 27
+  X: 331
+  Y: 249
