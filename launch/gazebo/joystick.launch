@@ -1,0 +1,16 @@
+<launch>
+  <arg name="rviz" default="true" />  
+  <arg name="gui" default="true" />
+  <arg name="world_name" default="empty" />
+
+  <include file="$(find ros_whill)/launch/gazebo/whill_gazebo.launch">
+    <arg name="world_name" value="$(arg world_name)" />
+    <arg name="rviz" value="$(arg rviz)" />  
+    <arg name="gui" value="$(arg gui)" />
+  </include>
+
+  <node name="joy_node" pkg="joy" type="joy_node" />
+  <node name="basic_twist_publisher" pkg="ros_whill" type="ros_whill">
+  </node>
+
+</launch>

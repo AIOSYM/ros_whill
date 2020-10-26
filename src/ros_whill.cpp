@@ -412,142 +412,142 @@ void whill_callback_powered_on(WHILL *caller)
 //
 // Main
 //
-int main(int argc, char **argv)
-{
-    // ROS setup
-    ros::init(argc, argv, "whill");
-    ros::NodeHandle nh("~");
+// int main(int argc, char **argv)
+// {
+//     // ROS setup
+//     ros::init(argc, argv, "whill");
+//     ros::NodeHandle nh("~");
 
-    // Services
-    //set_power_service_service = nh.advertiseService("power/on", set_power_service_callback);
-    ros::ServiceServer clear_odom_service = nh.advertiseService("odom/clear", &ros_srv_odom_clear_callback);
-    ros::ServiceServer set_speed_profile_service = nh.advertiseService("speedProfile/set", &ros_srv_set_speed_profile);
-    ros::ServiceServer set_power_service = nh.advertiseService("power", &ros_srv_set_power);
+//     // Services
+//     //set_power_service_service = nh.advertiseService("power/on", set_power_service_callback);
+//     ros::ServiceServer clear_odom_service = nh.advertiseService("odom/clear", &ros_srv_odom_clear_callback);
+//     ros::ServiceServer set_speed_profile_service = nh.advertiseService("speedProfile/set", &ros_srv_set_speed_profile);
+//     ros::ServiceServer set_power_service = nh.advertiseService("power", &ros_srv_set_power);
 
-    // Subscriber
-    ros::Subscriber joystick_subscriber = nh.subscribe("controller/joy", 100, ros_joystick_callback);
+//     // Subscriber
+//     ros::Subscriber joystick_subscriber = nh.subscribe("controller/joy", 100, ros_joystick_callback);
 
-    // Publishers
-    ros_joystick_state_publisher = nh.advertise<sensor_msgs::Joy>("states/joy", 100);
-    ros_jointstate_publisher = nh.advertise<sensor_msgs::JointState>("states/jointState", 100);
-    ros_imu_publisher = nh.advertise<sensor_msgs::Imu>("states/imu", 100);
-    ros_battery_state_publisher = nh.advertise<sensor_msgs::BatteryState>("states/batteryState", 100);
-    ros_odom_publisher = nh.advertise<nav_msgs::Odometry>("odom", 100);
+//     // Publishers
+//     ros_joystick_state_publisher = nh.advertise<sensor_msgs::Joy>("states/joy", 100);
+//     ros_jointstate_publisher = nh.advertise<sensor_msgs::JointState>("states/jointState", 100);
+//     ros_imu_publisher = nh.advertise<sensor_msgs::Imu>("states/imu", 100);
+//     ros_battery_state_publisher = nh.advertise<sensor_msgs::BatteryState>("states/batteryState", 100);
+//     ros_odom_publisher = nh.advertise<nav_msgs::Odometry>("odom", 100);
 
-    // TF Broadcaster
-    odom_broadcaster = new tf::TransformBroadcaster;
+//     // TF Broadcaster
+//     odom_broadcaster = new tf::TransformBroadcaster;
 
-    // Parameters
-    // WHILL Report Packet Interval
-    nh.getParam("send_interval", interval);
-    if (interval < 10)
-    {
-        ROS_WARN("Too short interval. Set interval > 10");
-        nh.setParam("send_interval", 10);
-        interval = 10;
-    }
-    ROS_INFO("param: send_interval=%d", interval);
+//     // Parameters
+//     // WHILL Report Packet Interval
+//     nh.getParam("send_interval", interval);
+//     if (interval < 10)
+//     {
+//         ROS_WARN("Too short interval. Set interval > 10");
+//         nh.setParam("send_interval", 10);
+//         interval = 10;
+//     }
+//     ROS_INFO("param: send_interval=%d", interval);
 
-    // Serial Port Device Name
-    std::string serialport;
-    nh.param<std::string>("serialport", serialport, "/dev/ttyUSB0");
+//     // Serial Port Device Name
+//     std::string serialport;
+//     nh.param<std::string>("serialport", serialport, "/dev/ttyUSB0");
 
-    // Disable publishing odometry tf
-    nh.param<bool>("publish_tf", publish_tf, true);
-
-
-    bool keep_connected;
-    nh.param<bool>("keep_connected", keep_connected, false);
-
-    unsigned long baud = 38400;
-    serial::Timeout timeout = serial::Timeout::simpleTimeout(0);
-    timeout.write_timeout_multiplier = 5; // Wait 5ms every bytes
-
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
+//     // Disable publishing odometry tf
+//     nh.param<bool>("publish_tf", publish_tf, true);
 
 
+//     bool keep_connected;
+//     nh.param<bool>("keep_connected", keep_connected, false);
 
-    while (ros::ok())
-    {
-        last_received = ros::Time::now();
-        std::cout << "\n Port Opening." << std::flush;
+//     unsigned long baud = 38400;
+//     serial::Timeout timeout = serial::Timeout::simpleTimeout(0);
+//     timeout.write_timeout_multiplier = 5; // Wait 5ms every bytes
 
-        while (ros::ok())
-        {
-            try
-            {
-                ser = new serial::Serial(serialport, baud, timeout);
-                break;
-            }
-            catch (...)
-            {
-                safeDelete(ser);
-                ser = nullptr;
-                ros::Duration(1.0).sleep();
-                std::cout << "." << std::flush;
-            }
-        }
-        if(!ros::ok())break;
-
-        ROS_INFO("Opened.");
-        ser->flush();
-
-        whill = new WHILL(serialRead, serialWrite, sleep_ms);
-        whill->setPower(true);
-        whill->stopSendingData();
-
-        odom.reset();
-        odom.setParameters(whill->wheel_radius, whill->tread);
-
-        whill->register_callback(whill_callback_data1, WHILL::EVENT::CALLBACK_DATA1);
-        whill->register_callback(whill_callback_powered_on, WHILL::EVENT::CALLBACK_POWER_ON);
+//     ros::AsyncSpinner spinner(1);
+//     spinner.start();
 
 
-        // Initial Speed Profile
-        ros_whill::SetSpeedProfile::Request init_speed_req;
-        if (nh.getParam("init_speed/forward/speed", init_speed_req.forward.speed) &&
-            nh.getParam("init_speed/forward/acc", init_speed_req.forward.acc) &&
-            nh.getParam("init_speed/forward/dec", init_speed_req.forward.dec) &&
-            nh.getParam("init_speed/backward/speed", init_speed_req.backward.speed) &&
-            nh.getParam("init_speed/backward/acc", init_speed_req.backward.acc) &&
-            nh.getParam("init_speed/backward/dec", init_speed_req.backward.dec) &&
-            nh.getParam("init_speed/turn/speed", init_speed_req.turn.speed) &&
-            nh.getParam("init_speed/turn/acc", init_speed_req.turn.acc) &&
-            nh.getParam("init_speed/turn/dec", init_speed_req.turn.dec)
-        )
-        {
-            ros_whill::SetSpeedProfile::Response res;
-            ros_srv_set_speed_profile(init_speed_req,res);
-            if(res.success == false){
-                ROS_INFO("Could not set Initial Profile.");
-            }
-        }
 
-        sleep_ms(10);
-        whill->begin(20); // ms
+//     while (ros::ok())
+//     {
+//         last_received = ros::Time::now();
+//         std::cout << "\n Port Opening." << std::flush;
 
-        ros::Rate rate(100);
+//         while (ros::ok())
+//         {
+//             try
+//             {
+//                 ser = new serial::Serial(serialport, baud, timeout);
+//                 break;
+//             }
+//             catch (...)
+//             {
+//                 safeDelete(ser);
+//                 ser = nullptr;
+//                 ros::Duration(1.0).sleep();
+//                 std::cout << "." << std::flush;
+//             }
+//         }
+//         if(!ros::ok())break;
 
-        while (ros::ok())
-        {
-            whill->refresh();
-            activate_cmd_vel_topic(nh);
-            rate.sleep();
-            if (keep_connected && (abs((last_received - ros::Time::now()).toSec()) > 2.0))
-            {
-                ROS_INFO("Disconnect due to no longer packets received.");
-                ROS_WARN("Check your serial connection to WHILL.");
-                break;
-            }
-        }
+//         ROS_INFO("Opened.");
+//         ser->flush();
 
-        ser->close();
-        safeDelete(ser);
-        safeDelete(whill);
-    }
+//         whill = new WHILL(serialRead, serialWrite, sleep_ms);
+//         whill->setPower(true);
+//         whill->stopSendingData();
 
-    spinner.stop();
+//         odom.reset();
+//         odom.setParameters(whill->wheel_radius, whill->tread);
 
-    return 0;
-}
+//         whill->register_callback(whill_callback_data1, WHILL::EVENT::CALLBACK_DATA1);
+//         whill->register_callback(whill_callback_powered_on, WHILL::EVENT::CALLBACK_POWER_ON);
+
+
+//         // Initial Speed Profile
+//         ros_whill::SetSpeedProfile::Request init_speed_req;
+//         if (nh.getParam("init_speed/forward/speed", init_speed_req.forward.speed) &&
+//             nh.getParam("init_speed/forward/acc", init_speed_req.forward.acc) &&
+//             nh.getParam("init_speed/forward/dec", init_speed_req.forward.dec) &&
+//             nh.getParam("init_speed/backward/speed", init_speed_req.backward.speed) &&
+//             nh.getParam("init_speed/backward/acc", init_speed_req.backward.acc) &&
+//             nh.getParam("init_speed/backward/dec", init_speed_req.backward.dec) &&
+//             nh.getParam("init_speed/turn/speed", init_speed_req.turn.speed) &&
+//             nh.getParam("init_speed/turn/acc", init_speed_req.turn.acc) &&
+//             nh.getParam("init_speed/turn/dec", init_speed_req.turn.dec)
+//         )
+//         {
+//             ros_whill::SetSpeedProfile::Response res;
+//             ros_srv_set_speed_profile(init_speed_req,res);
+//             if(res.success == false){
+//                 ROS_INFO("Could not set Initial Profile.");
+//             }
+//         }
+
+//         sleep_ms(10);
+//         whill->begin(20); // ms
+
+//         ros::Rate rate(100);
+
+//         while (ros::ok())
+//         {
+//             whill->refresh();
+//             activate_cmd_vel_topic(nh);
+//             rate.sleep();
+//             if (keep_connected && (abs((last_received - ros::Time::now()).toSec()) > 2.0))
+//             {
+//                 ROS_INFO("Disconnect due to no longer packets received.");
+//                 ROS_WARN("Check your serial connection to WHILL.");
+//                 break;
+//             }
+//         }
+
+//         ser->close();
+//         safeDelete(ser);
+//         safeDelete(whill);
+//     }
+
+//     spinner.stop();
+
+//     return 0;
+// }
