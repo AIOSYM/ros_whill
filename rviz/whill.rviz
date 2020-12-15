@@ -178,7 +178,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /whill_simulator/camera1/image_raw
+      Image Topic: /whill/camera1/image_raw
       Name: Camera
       Overlay Alpha: 0.5
       Queue Size: 2

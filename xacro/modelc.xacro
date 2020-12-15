@@ -244,7 +244,7 @@
       <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <cameraName>whill_simulator/camera1</cameraName>
+        <cameraName>whill/camera1</cameraName>
         <imageTopicName>image_raw</imageTopicName>
         <cameraInfoTopicName>camera_info</cameraInfoTopicName>
         <frameName>camera_link</frameName>
@@ -335,7 +335,7 @@
     <!-- ===============  Gazebo =============== -->
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/whill_simulator</robotNamespace>
+            <robotNamespace>/whill</robotNamespace>
             <legacyModeNS>true</legacyModeNS>
         </plugin>
     </gazebo>

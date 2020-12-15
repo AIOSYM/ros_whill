@@ -35,8 +35,8 @@
   </group>
   <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" required="true" respawn="$(arg respawn_gazebo)" output="screen"
 	    args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)">
-    <remap from="/whill_simulator/diff_drive_controller/cmd_vel" to="/cmd_vel" />
-    <remap from="/whill_simulator/diff_drive_controller/odom" to="/odom" />
+    <remap from="/whill/diff_drive_controller/cmd_vel" to="/cmd_vel" />
+    <remap from="/whill/diff_drive_controller/odom" to="/odom" />
   </node>
 
   <!-- start gazebo client -->
